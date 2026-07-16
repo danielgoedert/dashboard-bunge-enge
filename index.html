@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wrench Time · EngePro Bunge</title>
+<title>Wrench Time · EngePro <> Bunge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>/* Chart.js v4.4.4 — embedded inline so the dashboard has zero external dependencies */
@@ -552,8 +552,8 @@ const toSec = hms => { if(!hms) return null; const [h,m,s]=hms.split(':').map(Nu
 const fmtMMSS = s => { const m=Math.floor(s/60), sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; };
 
 const GROUP_COLORS = {
-  'Trabalho':'#224982','Documentação':'#3a68aa','Discussão':'#5f86bd','Coordenação':'#7fa1cf',
-  'Reuniões':'#15224b','Deslocamento':'#d34a52','Espera':'#df9a3c','Pausas':'#8890ab'
+  'Trabalho':'#338a4e','Documentação':'#303f9f','Discussão':'#9c27b0','Coordenação':'#f06292',
+  'Reuniões':'#c2185b','Deslocamento':'#b71c1c','Espera':'#e64a19','Pausas':'#fbc02d'
 };
 
 const DIAS = [...new Set(RAW.map(r=>r.data))].sort();
