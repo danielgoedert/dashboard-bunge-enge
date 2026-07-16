@@ -14,7 +14,7 @@
         h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
         
         /* Sidebar Styling */
-        .sidebar { background-color: #13163a; width: 280px; display: flex; flex-direction: column; padding-top: 2rem; }
+        .sidebar { background-color: #13163a; width: 280px; display: flex; flex-direction: column; padding-top: 2rem; flex-shrink: 0; transition: 0.3s; }
         .logo-container { text-align: center; color: white; margin-bottom: 3rem; font-size: 1.5rem; font-weight: bold; }
         .logo-container span { font-weight: 300; }
         
@@ -28,35 +28,34 @@
         .nav-btn.active { background-color: #f0f4f8; color: #13163a; box-shadow: -5px 5px 10px rgba(0,0,0,0.05); }
 
         /* Main Content */
-        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; width: 100%; }
         .view-section { display: none; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* KPI Cards */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .kpi-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #224982; }
         .kpi-value { font-size: 2rem; font-weight: 700; color: #13163a; margin-top: 0.5rem; }
         
         /* Charts Grid */
         .charts-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; }
-        .chart-container { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .chart-container { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; }
 
         /* Table Styling */
-        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; margin-top: 1rem; }
-        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; }
-        th { background-color: #15224b; color: white; padding: 1rem; font-weight: 600; text-transform: uppercase; position: sticky; top: 0; }
-        td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; }
+        .table-wrapper { width: 100%; overflow-x: auto; border-radius: 0 0 12px 12px; }
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 1rem; display: flex; flex-direction: column; }
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; min-width: 800px; /* Garante que a tabela não esmague no celular */ }
+        th { background-color: #15224b; color: white; padding: 1rem; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
         tr:nth-child(even) { background-color: #f8fafc; }
         tr:hover { background-color: #eff6ff; }
 
         /* Badges */
         .badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 600; font-size: 0.75rem; display: inline-block; }
-        /* Descrição Colors */
         .badge-trab { background-color: #28a745; color: white; }
         .badge-inop { background-color: #dc3545; color: white; }
         .badge-plan { background-color: #fd7e14; color: white; }
-        /* Classificação Colors (Exemplos) */
         .badge-class-green { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .badge-class-red { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .badge-class-pink { background-color: #f8d7da; color: #c21a5b; border: 1px solid #f5c6cb; }
@@ -66,6 +65,35 @@
         .filter-bar { display: flex; align-items: center; gap: 1rem; background: #15224b; padding: 1rem 1.5rem; border-radius: 12px 12px 0 0; color: white; }
         select { padding: 0.5rem; border-radius: 6px; border: none; background: rgba(255,255,255,0.1); color: white; font-weight: 600; cursor: pointer; outline: none; }
         select option { color: #13163a; background: white; }
+
+        /* --- RESPONSIVIDADE (MOBILE) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: 100vh; }
+            
+            .sidebar { width: 100%; padding: 1rem; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; border-radius: 0 0 20px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
+            .logo-container { width: 100%; margin-bottom: 1rem; font-size: 1.25rem; }
+            
+            .nav-btn { margin: 0.25rem; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; flex: 1; justify-content: center; text-align: center; }
+            .nav-btn i { margin-right: 0.5rem; font-size: 1rem; width: auto; }
+            .nav-btn.active { box-shadow: none; }
+            
+            .main-content { padding: 1rem; padding-bottom: 2rem; }
+            
+            .kpi-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .kpi-card { padding: 1rem; }
+            .kpi-value { font-size: 1.5rem; }
+            
+            .charts-grid { grid-template-columns: 1fr; } /* Gráficos ficam empilhados */
+            
+            h2 { font-size: 1.25rem; margin-bottom: 1rem; text-align: center; }
+            
+            .filter-bar { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+            select { width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; } /* KPIs empilhados em telas muito pequenas */
+        }
     </style>
 </head>
 <body>
@@ -77,10 +105,10 @@
         </div>
         
         <div class="nav-btn" onclick="switchView('view-colab1', this)">
-            <i class="fa-regular fa-user"></i> COLABORADOR 1
+            <i class="fa-regular fa-user"></i> COLAB 1
         </div>
         <div class="nav-btn" onclick="switchView('view-colab2', this)">
-            <i class="fa-solid fa-user-group"></i> COLABORADOR 2
+            <i class="fa-solid fa-user-group"></i> COLAB 2
         </div>
         <div class="nav-btn active" onclick="switchView('view-analises', this)">
             <i class="fa-solid fa-chart-line"></i> ANÁLISES
@@ -129,34 +157,36 @@
         <div id="view-colab1" class="view-section">
             <h2 class="text-2xl font-bold mb-6 text-[#13163a]" id="colab-title">Análise de Tempos - Colaborador</h2>
             
-            <div class="filter-bar">
-                <label for="dia-filter" class="font-bold">Filtrar por Dia:</label>
-                <select id="dia-filter" onchange="renderizarTabela()">
-                    <option value="todos">Todos os Dias</option>
-                    <option value="1">Dia 1</option>
-                    <option value="2">Dia 2</option>
-                    <option value="3">Dia 3</option>
-                </select>
-            </div>
-
             <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>INÍCIO</th>
-                            <th>FIM</th>
-                            <th>TEMPO</th>
-                            <th>TEMPO (s)</th>
-                            <th>ATIVIDADE</th>
-                            <th>OBSERVAÇÕES</th>
-                            <th>CLASSIFICAÇÃO</th>
-                            <th>DESCRIÇÃO</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-corpo">
-                        <!-- Linhas serão injetadas via JS -->
-                    </tbody>
-                </table>
+                <div class="filter-bar">
+                    <label for="dia-filter" class="font-bold">Filtrar por Dia:</label>
+                    <select id="dia-filter" onchange="renderizarTabela()">
+                        <option value="todos">Todos os Dias</option>
+                        <option value="1">Dia 1</option>
+                        <option value="2">Dia 2</option>
+                        <option value="3">Dia 3</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>INÍCIO</th>
+                                <th>FIM</th>
+                                <th>TEMPO</th>
+                                <th>TEMPO (s)</th>
+                                <th>ATIVIDADE</th>
+                                <th>OBSERVAÇÕES</th>
+                                <th>CLASSIFICAÇÃO</th>
+                                <th>DESCRIÇÃO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-corpo">
+                            <!-- Linhas serão injetadas via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -165,24 +195,19 @@
     <script>
         // --- 1. LÓGICA DE NAVEGAÇÃO DA BARRA LATERAL ---
         function switchView(viewId, element) {
-            // Esconde todas as seções
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-            // Remove a classe 'active' de todos os botões
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             
-            // Mostra a seção clicada e marca o botão
             document.getElementById(viewId).classList.add('active');
             element.classList.add('active');
 
-            // Ajusta o título se for visão de colaborador
             if(viewId === 'view-colab1') {
-                document.getElementById('colab-title').innerText = "Análise de Tempos - Colaborador 1";
+                document.getElementById('colab-title').innerText = "Tempos - Colaborador 1";
                 colaboradorAtual = 1;
                 renderizarTabela();
             } else if (viewId === 'view-colab2') {
-                // Reutilizamos a mesma estrutura HTML para o Colab 2, mudando apenas a ID para ser mostrada
                 document.getElementById('view-colab1').classList.add('active'); 
-                document.getElementById('colab-title').innerText = "Análise de Tempos - Colaborador 2";
+                document.getElementById('colab-title').innerText = "Tempos - Colaborador 2";
                 colaboradorAtual = 2;
                 renderizarTabela();
             }
@@ -191,7 +216,6 @@
         // --- 2. LÓGICA DA TABELA DE COLABORADORES ---
         let colaboradorAtual = 1;
         
-        // Dados de demonstração baseados no seu print (substitua isso pela busca da API depois)
         const mockDadosPlanilha = [
             { colab: 2, dia: "1", inicio: "09:04:00", fim: "09:43:00", tempo: "0:39:00", tempos: "2.340", ativ: "Preparar atividade", obs: "", class: "Procedimentos prévios", desc: "Trabalhando" },
             { colab: 2, dia: "1", inicio: "09:43:00", fim: "09:52:00", tempo: "0:09:00", tempos: "540", ativ: "Transportar os rolos", obs: "", class: "Deslocamento", desc: "Inoperante" },
@@ -212,7 +236,7 @@
                 if (texto.includes('segurança')) return 'badge-class-pink';
                 if (texto.includes('pausa')) return 'badge-class-yellow';
             }
-            return 'bg-gray-200 text-gray-700'; // Default
+            return 'bg-gray-200 text-gray-700'; 
         }
 
         function renderizarTabela() {
@@ -220,7 +244,6 @@
             const tbody = document.getElementById('tabela-corpo');
             tbody.innerHTML = '';
 
-            // Filtra os dados pelo colaborador atual e pelo dia selecionado
             const dadosFiltrados = mockDadosPlanilha.filter(linha => {
                 const matchColab = linha.colab === colaboradorAtual;
                 const matchDia = filtroDia === 'todos' || linha.dia === filtroDia;
@@ -232,7 +255,6 @@
                 return;
             }
 
-            // Injeta as linhas no HTML
             dadosFiltrados.forEach(linha => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -249,21 +271,14 @@
             });
         }
 
-
         // --- 3. LÓGICA DO DASHBOARD DE ANÁLISES (API E GRÁFICOS) ---
         async function carregarDashboard() {
             try {
-                // Aqui você pode manter o seu fetch para a /api/planilha futuramente
-                // const response = await fetch('/api/planilha');
-                // const dados = await response.json();
-                
-                // Dados simulados para visualização
                 document.getElementById('kpi-tempo-obs').innerText = "222.840";
                 document.getElementById('kpi-tempo-trab').innerText = "117.360";
                 document.getElementById('kpi-wt').innerText = "52,7%";
                 document.getElementById('kpi-atividades').innerText = "277";
 
-                // Gráfico Rosca (Doughnut)
                 new Chart(document.getElementById('chartDoughnut'), {
                     type: 'doughnut',
                     data: {
@@ -274,10 +289,9 @@
                             borderWidth: 0
                         }]
                     },
-                    options: { responsive: true, cutout: '75%', plugins: { legend: { position: 'bottom' } } }
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom' } } }
                 });
 
-                // Gráfico de Barras
                 new Chart(document.getElementById('chartBar'), {
                     type: 'bar',
                     data: {
@@ -289,7 +303,7 @@
                             borderRadius: 4
                         }]
                     },
-                    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
                 });
 
             } catch(e) {
@@ -297,7 +311,6 @@
             }
         }
 
-        // Inicia carregando os gráficos da aba principal
         window.addEventListener('DOMContentLoaded', carregarDashboard);
     </script>
 </body>
