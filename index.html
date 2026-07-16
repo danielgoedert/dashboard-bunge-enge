@@ -3,372 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Produtividade - Bunge</title>
-    
-    <!-- Fontes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-    
-    <!-- Ícones (FontAwesome) -->
+    <title>Dashboard Wrench Time - EngePro Bunge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Tailwind CSS para Estilização Rápida e Responsiva -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Chart.js para Gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        deep: '#13163a',
-                        surface: '#15224b',
-                        accent: '#3a68aa',
-                        accentDark: '#224982',
-                        success: '#10b981',
-                        warning: '#f59e0b',
-                        danger: '#ef4444',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Orbitron', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body {
-            background-color: #0b0f24; /* Fundo ainda mais escuro para contraste */
-            color: #cbd5e1;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; color: #15224b; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
         
-        /* Estilização da barra de rolagem */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* Sidebar Styling */
+        .sidebar { background-color: #13163a; width: 280px; display: flex; flex-direction: column; padding-top: 2rem; }
+        .logo-container { text-align: center; color: white; margin-bottom: 3rem; font-size: 1.5rem; font-weight: bold; }
+        .logo-container span { font-weight: 300; }
+        
+        .nav-btn { 
+            display: flex; align-items: center; padding: 1rem 2rem; margin: 0.5rem 0 0.5rem 1rem; 
+            color: white; text-decoration: none; font-weight: 600; cursor: pointer;
+            border-radius: 30px 0 0 30px; transition: all 0.3s ease;
         }
-        ::-webkit-scrollbar-track {
-            background: #13163a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3a68aa;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #224982;
-        }
+        .nav-btn i { font-size: 1.5rem; margin-right: 1rem; width: 30px; text-align: center; }
+        .nav-btn:hover { background-color: rgba(255,255,255,0.1); }
+        .nav-btn.active { background-color: #f0f4f8; color: #13163a; box-shadow: -5px 5px 10px rgba(0,0,0,0.05); }
 
-        .glass-panel {
-            background: rgba(21, 34, 75, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(58, 104, 170, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
+        /* Main Content */
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .view-section { display: none; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* KPI Cards */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .kpi-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #224982; }
+        .kpi-value { font-size: 2rem; font-weight: 700; color: #13163a; margin-top: 0.5rem; }
+        
+        /* Charts Grid */
+        .charts-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; }
+        .chart-container { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+        /* Table Styling */
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; }
+        th { background-color: #15224b; color: white; padding: 1rem; font-weight: 600; text-transform: uppercase; position: sticky; top: 0; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: #eff6ff; }
+
+        /* Badges */
+        .badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 600; font-size: 0.75rem; display: inline-block; }
+        /* Descrição Colors */
+        .badge-trab { background-color: #28a745; color: white; }
+        .badge-inop { background-color: #dc3545; color: white; }
+        .badge-plan { background-color: #fd7e14; color: white; }
+        /* Classificação Colors (Exemplos) */
+        .badge-class-green { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .badge-class-red { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .badge-class-pink { background-color: #f8d7da; color: #c21a5b; border: 1px solid #f5c6cb; }
+        .badge-class-yellow { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+
+        /* Select Filter */
+        .filter-bar { display: flex; align-items: center; gap: 1rem; background: #15224b; padding: 1rem 1.5rem; border-radius: 12px 12px 0 0; color: white; }
+        select { padding: 0.5rem; border-radius: 6px; border: none; background: rgba(255,255,255,0.1); color: white; font-weight: 600; cursor: pointer; outline: none; }
+        select option { color: #13163a; background: white; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden text-sm md:text-base">
+<body>
 
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-deep flex-shrink-0 hidden md:flex flex-col border-r border-accent/20 z-20">
-        <div class="h-20 flex items-center justify-center border-b border-accent/20">
-            <h1 class="font-display font-bold text-xl text-white tracking-wider">
-                <i class="fa-solid fa-gear text-accent mr-2"></i> WT Dash
-            </h1>
+    <nav class="sidebar">
+        <div class="logo-container">
+            EngePro <span>BUNGE</span>
         </div>
         
-        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-accent/20 text-white rounded-lg border-l-4 border-accent transition-colors">
-                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-                <span class="font-medium">Visão Geral</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-surface hover:text-white rounded-lg transition-colors">
-                <i class="fa-solid fa-users w-5 text-center"></i>
-                <span class="font-medium">Colaboradores</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-surface hover:text-white rounded-lg transition-colors">
-                <i class="fa-solid fa-clipboard-list w-5 text-center"></i>
-                <span class="font-medium">Atividades</span>
-            </a>
-        </nav>
-        
-        <div class="p-4 border-t border-accent/20">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-accentDark flex items-center justify-center text-white font-bold">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div>
-                    <p class="text-white font-medium text-sm">Engenharia</p>
-                    <p class="text-xs text-slate-400">Administrador</p>
-                </div>
-            </div>
+        <div class="nav-btn" onclick="switchView('view-colab1', this)">
+            <i class="fa-regular fa-user"></i> COLABORADOR 1
         </div>
-    </aside>
+        <div class="nav-btn" onclick="switchView('view-colab2', this)">
+            <i class="fa-solid fa-user-group"></i> COLABORADOR 2
+        </div>
+        <div class="nav-btn active" onclick="switchView('view-analises', this)">
+            <i class="fa-solid fa-chart-line"></i> ANÁLISES
+        </div>
+    </nav>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] relative">
-        <!-- Gradiente de fundo sutil -->
-        <div class="absolute inset-0 bg-gradient-to-br from-transparent to-accent/10 pointer-events-none"></div>
-
-        <!-- HEADER -->
-        <header class="h-20 glass-panel flex items-center justify-between px-6 lg:px-10 z-10 sticky top-0">
-            <div class="flex items-center gap-4">
-                <button class="md:hidden text-slate-300 hover:text-white">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-white font-display">Performance Operacional</h2>
-                    <p class="text-xs md:text-sm text-accent">Base de Dados Consolidada</p>
-                </div>
-            </div>
+    <main class="main-content">
+        
+        <!-- VISÃO: ANÁLISES (Dashboard Original) -->
+        <div id="view-analises" class="view-section active">
+            <h2 class="text-2xl font-bold mb-6 text-[#13163a]">Visão Geral da Manutenção</h2>
             
-            <div class="flex items-center gap-4">
-                <div class="hidden sm:flex items-center bg-surface px-4 py-2 rounded-full border border-accent/30">
-                    <i class="fa-solid fa-calendar text-accent mr-2"></i>
-                    <span id="data-atualizacao" class="text-sm font-medium">Últimos 30 dias</span>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="text-sm font-semibold text-gray-500 uppercase">Tempo Observado</div>
+                    <div class="kpi-value" id="kpi-tempo-obs">Carregando...</div>
                 </div>
-                <button onclick="atualizarDashboard()" class="bg-accent hover:bg-accentDark text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-lg shadow-accent/20">
-                    <i class="fa-solid fa-rotate-right"></i> <span class="hidden sm:inline">Sincronizar</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- DASHBOARD SCROLLABLE AREA -->
-        <div class="flex-1 overflow-y-auto p-6 lg:p-10 z-10 space-y-6 pb-20">
-            
-            <!-- KPI GRID -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Card 1 -->
-                <div class="glass-panel rounded-xl p-6 border-t-4 border-t-slate-400 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <i class="fa-regular fa-clock text-5xl text-slate-300"></i>
-                    </div>
-                    <p class="text-sm uppercase tracking-wider text-slate-400 font-semibold mb-1">Tempo Observado</p>
-                    <h3 id="kpi-tempo-obs" class="text-3xl md:text-4xl font-bold text-white font-display">222k<span class="text-lg text-slate-500 ml-1">s</span></h3>
-                    <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-arrow-up text-success"></i> Base total</p>
+                <div class="kpi-card">
+                    <div class="text-sm font-semibold text-gray-500 uppercase">Tempo Trabalhando</div>
+                    <div class="kpi-value" id="kpi-tempo-trab">Carregando...</div>
                 </div>
-                
-                <!-- Card 2 -->
-                <div class="glass-panel rounded-xl p-6 border-t-4 border-t-success relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <i class="fa-solid fa-person-digging text-5xl text-success"></i>
-                    </div>
-                    <p class="text-sm uppercase tracking-wider text-slate-400 font-semibold mb-1">Tempo Trabalhando</p>
-                    <h3 id="kpi-tempo-trab" class="text-3xl md:text-4xl font-bold text-white font-display">117k<span class="text-lg text-slate-500 ml-1">s</span></h3>
-                    <p class="text-xs text-slate-400 mt-2">Horas diretas na manutenção</p>
+                <div class="kpi-card">
+                    <div class="text-sm font-semibold text-gray-500 uppercase">Wrench Time (WT)</div>
+                    <div class="kpi-value" id="kpi-wt">Carregando...</div>
                 </div>
-
-                <!-- Card 3 -->
-                <div class="glass-panel rounded-xl p-6 border-t-4 border-t-accent relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <i class="fa-solid fa-wrench text-5xl text-accent"></i>
-                    </div>
-                    <p class="text-sm uppercase tracking-wider text-slate-400 font-semibold mb-1">Wrench Time</p>
-                    <h3 id="kpi-wt" class="text-3xl md:text-4xl font-bold text-success font-display">52.4%</h3>
-                    <p class="text-xs text-slate-400 mt-2">Média global consolidada</p>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="glass-panel rounded-xl p-6 border-t-4 border-t-warning relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <i class="fa-solid fa-list-check text-5xl text-warning"></i>
-                    </div>
-                    <p class="text-sm uppercase tracking-wider text-slate-400 font-semibold mb-1">Atividades</p>
-                    <h3 id="kpi-atividades" class="text-3xl md:text-4xl font-bold text-white font-display">277</h3>
-                    <p class="text-xs text-slate-400 mt-2">Tarefas catalogadas</p>
+                <div class="kpi-card">
+                    <div class="text-sm font-semibold text-gray-500 uppercase">Nº Atividades</div>
+                    <div class="kpi-value" id="kpi-atividades">Carregando...</div>
                 </div>
             </div>
 
-            <!-- CHARTS SECTION -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <!-- Macro Categorias (Doughnut) -->
-                <div class="glass-panel rounded-xl p-6 lg:col-span-1 flex flex-col">
-                    <h3 class="text-lg font-semibold text-white mb-4 border-b border-accent/20 pb-2">Macro Categorias</h3>
-                    <div class="flex-1 relative min-h-[250px] flex items-center justify-center">
-                        <canvas id="doughnutChart"></canvas>
-                        <!-- Texto Centralizado -->
-                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4">
-                            <span class="text-xs text-slate-400">Maior ofensor</span>
-                            <span class="text-xl font-bold text-danger font-display">Espera</span>
-                        </div>
-                    </div>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="text-center text-gray-600 mb-4 text-sm font-bold">PRODUTIVIDADE GERAL</h3>
+                    <canvas id="chartDoughnut"></canvas>
                 </div>
-
-                <!-- Tempo por Classificação (Bar) -->
-                <div class="glass-panel rounded-xl p-6 lg:col-span-2 flex flex-col">
-                    <h3 class="text-lg font-semibold text-white mb-4 border-b border-accent/20 pb-2">Distribuição de Tempo por Classificação (s)</h3>
-                    <div class="flex-1 relative min-h-[250px] w-full">
-                        <canvas id="barChart"></canvas>
-                    </div>
+                <div class="chart-container">
+                    <h3 class="text-center text-gray-600 mb-4 text-sm font-bold">TEMPO POR CATEGORIA</h3>
+                    <canvas id="chartBar"></canvas>
                 </div>
             </div>
-
-            <!-- TIMELINE / GANTT PREVIEW -->
-            <div class="glass-panel rounded-xl p-6">
-                <div class="flex justify-between items-end mb-6 border-b border-accent/20 pb-2">
-                    <h3 class="text-lg font-semibold text-white">Timeline Simplificada (Amostra Colab 1)</h3>
-                    <span class="text-xs bg-surface px-2 py-1 rounded text-accent">Última leitura: 19/06</span>
-                </div>
-                
-                <div class="space-y-2">
-                    <!-- Barras de Timeline -->
-                    <div class="h-10 w-full bg-deep rounded-lg overflow-hidden flex border border-accent/10">
-                        <div class="h-full bg-accent hover:brightness-110 flex items-center justify-center text-xs font-bold text-white px-2 cursor-pointer tooltip" style="width: 15%;" title="Preparar Atividade">Prep.</div>
-                        <div class="h-full bg-danger hover:brightness-110 flex items-center justify-center text-xs font-bold text-white px-2 cursor-pointer tooltip" style="width: 5%;" title="Deslocamento">Desl.</div>
-                        <div class="h-full bg-warning hover:brightness-110 flex items-center justify-center text-xs font-bold text-white px-2 cursor-pointer tooltip" style="width: 15%;" title="Coordenação/Segurança">LOTO</div>
-                        <div class="h-full bg-success hover:brightness-110 flex items-center justify-center text-xs font-bold text-white px-2 cursor-pointer tooltip" style="width: 20%;" title="Execução (Desmontar)">Exec.</div>
-                        <div class="h-full bg-surface hover:brightness-110 flex items-center justify-center text-xs text-slate-400 px-2 cursor-pointer" style="width: 30%;" title="Pausa Programada">Almoço</div>
-                        <div class="h-full bg-success hover:brightness-110 flex items-center justify-center text-xs font-bold text-white px-2 cursor-pointer tooltip" style="width: 15%;" title="Montagem Final">Mont.</div>
-                    </div>
-                    <!-- Labels de Tempo -->
-                    <div class="flex justify-between text-[10px] sm:text-xs text-slate-500 font-display">
-                        <span>08:00</span>
-                        <span>10:00</span>
-                        <span>12:00</span>
-                        <span>14:00</span>
-                        <span>16:00</span>
-                        <span>17:00</span>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <!-- VISÃO: COLABORADORES (Tabela Dinâmica) -->
+        <div id="view-colab1" class="view-section">
+            <h2 class="text-2xl font-bold mb-6 text-[#13163a]" id="colab-title">Análise de Tempos - Colaborador</h2>
+            
+            <div class="filter-bar">
+                <label for="dia-filter" class="font-bold">Filtrar por Dia:</label>
+                <select id="dia-filter" onchange="renderizarTabela()">
+                    <option value="todos">Todos os Dias</option>
+                    <option value="1">Dia 1</option>
+                    <option value="2">Dia 2</option>
+                    <option value="3">Dia 3</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>INÍCIO</th>
+                            <th>FIM</th>
+                            <th>TEMPO</th>
+                            <th>TEMPO (s)</th>
+                            <th>ATIVIDADE</th>
+                            <th>OBSERVAÇÕES</th>
+                            <th>CLASSIFICAÇÃO</th>
+                            <th>DESCRIÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-corpo">
+                        <!-- Linhas serão injetadas via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
 
     <script>
-        // Configurações globais do Chart.js para combinar com o tema escuro
-        Chart.defaults.color = '#cbd5e1';
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        
-        let doughnutChartInstance = null;
-        let barChartInstance = null;
-
-        function inicializarGraficos(dadosPlanilha) {
-            // Se houver dados da planilha, usa eles, senão usa os defaults
-            const dadosDoughnut = dadosPlanilha?.macro || [52.7, 9.6, 37.7]; 
-            const dadosBarra = dadosPlanilha?.classificacao || [93120, 41820, 22560, 13920, 11040];
-
-            // 1. Gráfico Doughnut (Macro Categorias)
-            const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        // --- 1. LÓGICA DE NAVEGAÇÃO DA BARRA LATERAL ---
+        function switchView(viewId, element) {
+            // Esconde todas as seções
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            // Remove a classe 'active' de todos os botões
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             
-            if (doughnutChartInstance) doughnutChartInstance.destroy();
-            
-            doughnutChartInstance = new Chart(ctxDoughnut, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Trabalhando', 'Planejando', 'Inoperante'],
-                    datasets: [{
-                        data: dadosDoughnut,
-                        backgroundColor: [
-                            '#10b981', // success
-                            '#f59e0b', // warning
-                            '#ef4444'  // danger
-                        ],
-                        borderWidth: 0,
-                        cutout: '75%'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) { return ` ${context.label}: ${context.raw}%`; }
-                            }
-                        }
-                    }
-                }
-            });
+            // Mostra a seção clicada e marca o botão
+            document.getElementById(viewId).classList.add('active');
+            element.classList.add('active');
 
-            // 2. Gráfico de Barras (Tempo por Classificação)
-            const ctxBar = document.getElementById('barChart').getContext('2d');
-            
-            if (barChartInstance) barChartInstance.destroy();
-
-            barChartInstance = new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: ['Execução', 'Pausas', 'Esperas', 'Deslocamento', 'Coord/Segurança'],
-                    datasets: [{
-                        label: 'Tempo (segundos)',
-                        data: dadosBarra,
-                        backgroundColor: [
-                            '#10b981', // Execução
-                            '#15224b', // Pausas (Surface)
-                            '#ef4444', // Esperas
-                            '#3a68aa', // Deslocamento
-                            '#f59e0b'  // Coord
-                        ],
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y', // Barras horizontais
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: { 
-                            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
-                            ticks: { font: { family: "'Orbitron', sans-serif" } }
-                        },
-                        y: { 
-                            grid: { display: false, drawBorder: false }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Função de integração com a API da Cloudflare / Sheets
-        async function atualizarDashboard() {
-            const btn = document.querySelector('button');
-            const icon = btn.querySelector('i');
-            
-            // Animação de loading no botão
-            icon.classList.add('fa-spin');
-            
-            try {
-                // Chama a API invisível (mesma estrutura que você já tinha configurado)
-                // Se rodar localmente e der erro, ele cairá no catch e carregará os gráficos padrão
-                const response = await fetch('/api/planilha');
-                
-                if (!response.ok) throw new Error('API não disponível localmente/Falha');
-
-                const dados = await response.json();
-                
-                // Atualiza KPIs
-                if(dados.tempoObservado) document.getElementById('kpi-tempo-obs').innerText = dados.tempoObservado;
-                if(dados.tempoTrabalhando) document.getElementById('kpi-tempo-trab').innerText = dados.tempoTrabalhando;
-                if(dados.wrenchTime) document.getElementById('kpi-wt').innerText = dados.wrenchTime;
-                if(dados.numAtividades) document.getElementById('kpi-atividades').innerText = dados.numAtividades;
-                
-                // Atualiza Gráficos passando os dados estruturados da API
-                inicializarGraficos(dados);
-                
-                console.log("Dashboard atualizado com dados da planilha!");
-                
-            } catch (error) {
-                console.warn("Usando dados de demonstração (API não alcançada):", error.message);
-                // Inicializa os gráficos com os dados padrão caso não consiga acessar a API (ex: abrindo o arquivo direto no PC)
-                inicializarGraficos(null); 
-            } finally {
-                // Para animação
-                setTimeout(() => icon.classList.remove('fa-spin'), 500);
+            // Ajusta o título se for visão de colaborador
+            if(viewId === 'view-colab1') {
+                document.getElementById('colab-title').innerText = "Análise de Tempos - Colaborador 1";
+                colaboradorAtual = 1;
+                renderizarTabela();
+            } else if (viewId === 'view-colab2') {
+                // Reutilizamos a mesma estrutura HTML para o Colab 2, mudando apenas a ID para ser mostrada
+                document.getElementById('view-colab1').classList.add('active'); 
+                document.getElementById('colab-title').innerText = "Análise de Tempos - Colaborador 2";
+                colaboradorAtual = 2;
+                renderizarTabela();
             }
         }
+
+        // --- 2. LÓGICA DA TABELA DE COLABORADORES ---
+        let colaboradorAtual = 1;
         
-        // Inicializa ao carregar a página
-        window.addEventListener('DOMContentLoaded', atualizarDashboard);
+        // Dados de demonstração baseados no seu print (substitua isso pela busca da API depois)
+        const mockDadosPlanilha = [
+            { colab: 2, dia: "1", inicio: "09:04:00", fim: "09:43:00", tempo: "0:39:00", tempos: "2.340", ativ: "Preparar atividade", obs: "", class: "Procedimentos prévios", desc: "Trabalhando" },
+            { colab: 2, dia: "1", inicio: "09:43:00", fim: "09:52:00", tempo: "0:09:00", tempos: "540", ativ: "Transportar os rolos", obs: "", class: "Deslocamento", desc: "Inoperante" },
+            { colab: 2, dia: "1", inicio: "09:52:00", fim: "10:34:00", tempo: "0:42:00", tempos: "2.520", ativ: "Isolar área", obs: "Esperar bloqueio", class: "Coordenando segurança", desc: "Planejando" },
+            { colab: 2, dia: "1", inicio: "11:58:00", fim: "13:26:00", tempo: "1:28:00", tempos: "5.280", ativ: "Pausa programada", obs: "Almoço", class: "Pausas programadas", desc: "Inoperante" },
+            { colab: 1, dia: "2", inicio: "08:00:00", fim: "09:00:00", tempo: "1:00:00", tempos: "3.600", ativ: "Manutenção Preventiva", obs: "", class: "Executando trabalho", desc: "Trabalhando" }
+        ];
+
+        function obterClasseBadge(texto, tipo) {
+            texto = texto.trim().toLowerCase();
+            if (tipo === 'desc') {
+                if (texto === 'trabalhando') return 'badge-trab';
+                if (texto === 'inoperante') return 'badge-inop';
+                if (texto === 'planejando') return 'badge-plan';
+            } else if (tipo === 'class') {
+                if (texto.includes('prévi') || texto.includes('executando') || texto.includes('preparando')) return 'badge-class-green';
+                if (texto.includes('deslocamento')) return 'badge-class-red';
+                if (texto.includes('segurança')) return 'badge-class-pink';
+                if (texto.includes('pausa')) return 'badge-class-yellow';
+            }
+            return 'bg-gray-200 text-gray-700'; // Default
+        }
+
+        function renderizarTabela() {
+            const filtroDia = document.getElementById('dia-filter').value;
+            const tbody = document.getElementById('tabela-corpo');
+            tbody.innerHTML = '';
+
+            // Filtra os dados pelo colaborador atual e pelo dia selecionado
+            const dadosFiltrados = mockDadosPlanilha.filter(linha => {
+                const matchColab = linha.colab === colaboradorAtual;
+                const matchDia = filtroDia === 'todos' || linha.dia === filtroDia;
+                return matchColab && matchDia;
+            });
+
+            if(dadosFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-gray-500 py-4">Nenhum dado encontrado para este filtro.</td></tr>';
+                return;
+            }
+
+            // Injeta as linhas no HTML
+            dadosFiltrados.forEach(linha => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-blue-600 font-medium">${linha.inicio}</td>
+                    <td class="text-gray-600">${linha.fim}</td>
+                    <td class="text-gray-600">${linha.tempo}</td>
+                    <td class="font-bold text-gray-800">${linha.tempos}</td>
+                    <td class="text-gray-700">${linha.ativ}</td>
+                    <td class="text-gray-500 text-xs">${linha.obs}</td>
+                    <td><span class="badge ${obterClasseBadge(linha.class, 'class')}">${linha.class}</span></td>
+                    <td><span class="badge ${obterClasseBadge(linha.desc, 'desc')}">${linha.desc}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+
+        // --- 3. LÓGICA DO DASHBOARD DE ANÁLISES (API E GRÁFICOS) ---
+        async function carregarDashboard() {
+            try {
+                // Aqui você pode manter o seu fetch para a /api/planilha futuramente
+                // const response = await fetch('/api/planilha');
+                // const dados = await response.json();
+                
+                // Dados simulados para visualização
+                document.getElementById('kpi-tempo-obs').innerText = "222.840";
+                document.getElementById('kpi-tempo-trab').innerText = "117.360";
+                document.getElementById('kpi-wt').innerText = "52,7%";
+                document.getElementById('kpi-atividades').innerText = "277";
+
+                // Gráfico Rosca (Doughnut)
+                new Chart(document.getElementById('chartDoughnut'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Trabalhando', 'Inoperante', 'Planejando'],
+                        datasets: [{
+                            data: [52.7, 30.1, 17.2],
+                            backgroundColor: ['#28a745', '#dc3545', '#fd7e14'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, cutout: '75%', plugins: { legend: { position: 'bottom' } } }
+                });
+
+                // Gráfico de Barras
+                new Chart(document.getElementById('chartBar'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Executando', 'Deslocamento', 'Pausas', 'Proced. Prévios'],
+                        datasets: [{
+                            label: 'Tempo (s)',
+                            data: [100000, 35000, 45000, 20000],
+                            backgroundColor: '#224982',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                });
+
+            } catch(e) {
+                console.error("Erro ao carregar dados", e);
+            }
+        }
+
+        // Inicia carregando os gráficos da aba principal
+        window.addEventListener('DOMContentLoaded', carregarDashboard);
     </script>
 </body>
 </html>
